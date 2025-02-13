@@ -1,0 +1,33 @@
+name: Auto Push Code Updates
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  commit-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Make code changes (optional)
+        run: |
+          echo "// Auto-generated changes" >> README.md
+
+      - name: Commit changes
+        run: |
+          git add .
+          git commit -m "Automated commit from GitHub Actions" || echo "No changes to commit"
+
+      - name: Push changes using PAT
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/philip-sims/nocodon.git
+          git push origin main
